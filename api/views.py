@@ -31,7 +31,6 @@ def summarize_dialogue_api(request):
             # Generate summary
             summary = summarization_pipeline(dialogue, max_length=300, num_beams=8, length_penalty=0.8)[0]['summary_text']
             
-            # Replace '<n>' with actual new lines '\n'
             summary = summary.replace('<n>', '\n')
             
             return JsonResponse({"summary": summary}, status=200)
