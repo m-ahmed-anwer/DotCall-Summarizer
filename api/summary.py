@@ -1,5 +1,6 @@
-from transformers import pipeline, AutoModelForSeq2SeqLM, AutoTokenizer, AutoModelForSequenceClassification, Wav2Vec2ForCTC, Wav2Vec2Tokenizer, Wav2Vec2FeatureExtractor
+from transformers import pipeline, AutoModelForSequenceClassification, AutoTokenizer
 import torch
+from gradio_client import Client
 
 candidate_labels = [
     "politics", "technology", "health", "sports", "entertainment", "finance", "education",
@@ -23,38 +24,35 @@ candidate_labels = [
     "film studies", "television studies", "gender studies", "cultural studies"
 ]
 
-# Check if CUDA is available and use GPU if it is
 device = "cuda" if torch.cuda.is_available() else "cpu"
 
-# Define model checkpoints
-summary_model_ckpt = "google/pegasus-cnn_dailymail"
+summary_model_ckpt = "philschmid/bart-large-cnn-samsum"
 topic_model_ckpt = "facebook/bart-large-mnli"
+client = Client("valurank/Headline_generator")
 
-# Load tokenizer and model for summarization
-tokenizer_summary = AutoTokenizer.from_pretrained(summary_model_ckpt)
-model_summary = AutoModelForSeq2SeqLM.from_pretrained(summary_model_ckpt).to(device)
-
-# Load tokenizer and model for topic classification
 tokenizer_topic = AutoTokenizer.from_pretrained(topic_model_ckpt)
 model_topic = AutoModelForSequenceClassification.from_pretrained(topic_model_ckpt).to(device)
 
-# Create summarization pipeline
-summarization_pipeline = pipeline("summarization", model=model_summary, tokenizer=tokenizer_summary, device=0 if device == "cuda" else -1)
+def summary_convert(transcription):
+    summarizer = pipeline("summarization", model=summary_model_ckpt)
+    summary = summarizer(transcription)[0]['summary_text']
+    return summary
 
-# Create topic classification pipeline
-topic_classification_pipeline = pipeline("zero-shot-classification", model=model_topic, tokenizer=tokenizer_topic, device=0 if device == "cuda" else -1)
+def title_convert(transcription):
+    title = client.predict(
+        transcription,
+        api_name="/predict"
+    )
+    return title
 
-
-
-def generate_summarize(transcription):
-
-    # Generate summary
-    summary = summarization_pipeline(transcription, max_length=248, num_beams=8, length_penalty=0.8)[0]['summary_text']
-    summary = summary.replace('<n>', '\n')
-
-    # Generate topic
-    topic_result = topic_classification_pipeline(transcription, candidate_labels=candidate_labels)
-    top_topics = topic_result['labels'][:3]
+def top_topics_convert(transcription):
+    #inputs = tokenizer_topic(transcription, return_tensors="pt", truncation=True).to(device)
+    #outputs = model_topic(**inputs)
+    #scores = outputs.logits.softmax(dim=-1).detach().cpu().numpy()[0]
     
-    return summary, top_topics
-
+    # Get top 3 topics
+    #top_indices = scores.argsort()[-3:][::-1]
+    #top_topics = [candidate_labels[i] for i in top_indices]
+    top_topics = "title comes here from top_topics_convert"
+    
+    return top_topics
