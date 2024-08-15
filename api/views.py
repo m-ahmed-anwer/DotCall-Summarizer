@@ -34,7 +34,6 @@ def summarize_dialogue_api_via_text(request):
             top_topics = top_topics_convert(dialogue)
             title= title_convert(dialogue)
 
-            
             return JsonResponse({"transcription":dialogue, "summary": summary, "topics": top_topics,"title":title}, status=200)
         
         except Exception as e:
