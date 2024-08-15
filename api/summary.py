@@ -11,10 +11,6 @@ client = Client("valurank/Headline_generator")
 
 classifier = pipeline("zero-shot-classification", model=topic_model_ckpt, device=0)
 
-#tokenizer_topic = AutoTokenizer.from_pretrained(topic_model_ckpt)
-#model_topic = AutoModelForSequenceClassification.from_pretrained(topic_model_ckpt)
-
-
 def summary_convert(transcription):
     summarizer = pipeline("summarization", model=summary_model_ckpt)
     summary = summarizer(transcription)[0]['summary_text']
@@ -33,4 +29,7 @@ def top_topics_convert(transcription):
     # Extract the top 3 topics
     top_topics = sorted(zip(result["labels"], result["scores"]), key=lambda x: x[1], reverse=True)[:3]
 
-    return top_topics
+    # Get only the topic names
+    topic_names = [topic[0] for topic in top_topics]
+
+    return topic_names

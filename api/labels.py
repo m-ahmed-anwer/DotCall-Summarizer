@@ -8,7 +8,7 @@ candidate_labels = [
     "corporate social responsibility", "consumer behavior", "branding", 
     "product management", "supply chain", "e-commerce", "digital marketing", 
     "social media", "influencer marketing", "crowdfunding", "private equity", 
-    "hedge funds", "commodities", "foreign exchange", "derivatives", 
+    "hedge funds","AI", "commodities", "foreign exchange", "derivatives", 
     "financial technology", "fintech", "cryptoeconomics", "cyber law", 
     "intellectual property", "patent law", "corporate law", "family law", 
     "environmental law", "tax law", "constitutional law", "civil rights", 
