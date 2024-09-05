@@ -26,7 +26,7 @@ def summarize_dialogue_api_via_text(request):
         try:
             # Parse JSON data from request body
             data = json.loads(request.body)
-            dialogue = data.get("dialogue", "")
+            dialogue = data.get("transcription", "")
             if not dialogue:
                 return JsonResponse({"error": "Dialogue not provided"}, status=400)
             
@@ -34,7 +34,7 @@ def summarize_dialogue_api_via_text(request):
             top_topics = top_topics_convert(dialogue)
             title= title_convert(dialogue)
 
-            return JsonResponse({"transcription":dialogue, "summary": summary, "topics": top_topics,"title":title}, status=200)
+            return JsonResponse({"transcription":dialogue, "summary": summary, "title":title, "topics":top_topics}, status=200)
         
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
@@ -67,7 +67,7 @@ def summarize_dialogue_api_via_audio(request):
         top_topics = top_topics_convert(transcription)
         title= title_convert(transcription)
      
-        return JsonResponse({"transcription":transcription, "summary": summary, "topics": top_topics,"title":title}, status=200)
+        return JsonResponse({"transcription":transcription, "summary": summary,"title":title, "topics":top_topics}, status=200)
         
     else:
         return JsonResponse({'error': 'No file uploaded'}, status=400)
